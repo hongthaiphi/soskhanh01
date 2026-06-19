@@ -67,10 +67,8 @@
     flex-direction:column;
     align-items: flex-start;
   }
-  .brand-block-right{
-    display:flex;
-    align-items: center;
-  }
+  
+  /* Cập nhật CSS cho Logo ngoài */
   .logo-wrap{
     background:#fff;
     padding:6px 12px;
@@ -78,9 +76,21 @@
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    height:36px;
+    height:42px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   }
+  .brand-logo-img, .brand-partner-img {
+    max-height: 24px;
+    width: auto;
+    object-fit: contain;
+  }
+  .brand-divider {
+    width: 1px;
+    height: 20px;
+    background: #E3EDE9;
+    margin: 0 12px;
+  }
+
   .brand-sub{
     font-size:11.5px;
     color:#BFE3D8;
@@ -418,26 +428,17 @@
   <div class="brand-row">
     <div class="brand-block-left">
       <div class="logo-wrap">
-        <svg height="22" viewBox="0 0 65 24" xmlns="http://www.w3.org/2000/svg">
-          <text x="0" y="20" font-family="'Be Vietnam Pro', Arial, sans-serif" font-weight="900" font-size="22" fill="#006B5E" letter-spacing="-0.5">BIDV</text>
-        </svg>
+        <img class="brand-logo-img" src="logo_bidv.png" alt="BIDV">
+        <div class="brand-divider"></div>
+        <img class="brand-partner-img" src="Logo_bindland.png" alt="BIM Land">
       </div>
-      <div class="brand-sub">Chi nhánh Tràng Tiền - Hà Nội</div>
-    </div>
-    <div class="brand-block-right">
-      <div class="logo-wrap">
-        <svg height="16" viewBox="0 0 85 18" xmlns="http://www.w3.org/2000/svg">
-          <text x="0" y="15" font-family="'Be Vietnam Pro', Arial, sans-serif" font-weight="800" font-size="15" fill="#00332C" letter-spacing="0">BIM LAND</text>
-        </svg>
-      </div>
+      <div class="brand-sub">Chi nhánh Tràng Tiền &ndash; Hà Nội</div>
     </div>
   </div>
-  
   <h1>Tính nguồn trả nợ vay mua Prima Bay</h1>
   <p>Nhập thông tin khoản vay để biết thu nhập tối thiểu cần chứng minh — chỉ mất 30 giây.</p>
   <div class="tag"><span class="tag-dot"></span> Theo chương trình ưu đãi Prima Bay × BIDV</div>
 </div>
-
 <div class="wrap">
 
   <div class="card">
