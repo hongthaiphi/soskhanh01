@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Tính nguồn trả nợ — Prima Bay</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --navy:#00332C;
+    --navy-soft:#0A453C;
+    --teal:#006B5E;
+    --teal-light:#0E8C7A;
+    --gold:#F5A623;
+    --gold-soft:#FDEFD6;
+    --bg:#F6FAF8;
+    --card:#FFFFFF;
+    --line:#E3EDE9;
+    --ink:#0E2622;
+    --ink-soft:#5C7570;
+    --danger:#C0432B;
+    --ok:#1C8A5C;
+    --radius:18px;
+    --shadow: 0 8px 24px -10px rgba(0,51,44,0.18);
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Be Vietnam Pro',-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    padding-bottom:48px;
+    min-height:100vh;
+  }
+
+  /* ---------- HEADER ---------- */
+  .hero{
+    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-soft) 60%, var(--teal) 130%);
+    padding:22px 20px 34px;
+    position:relative;
+    overflow:hidden;
+    border-radius:0 0 28px 28px;
+  }
+  .hero::before{
+    content:"";
+    position:absolute;
+    width:220px;height:220px;
+    right:-70px; top:-60px;
+    border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(245,166,35,0.35), transparent 70%);
+  }
+  
+  /* Cấu trúc hiển thị Logo song song */
+  .brand-row{
+    display:flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position:relative;
+    z-index:2;
+    border-bottom: 1px dashed rgba(255,255,255,0.2);
+    padding-bottom: 16px;
+  }
+  .brand-block-left{
+    display:flex;
+    flex-direction:column;
+    align-items: flex-start;
+  }
+  .brand-block-right{
+    display:flex;
+    align-items: center;
+  }
+  .logo-wrap{
+    background:#fff;
+    padding:6px 12px;
+    border-radius:8px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    height:36px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .brand-sub{
+    font-size:11.5px;
+    color:#BFE3D8;
+    font-weight:600;
+    margin-top:8px;
+    letter-spacing: 0.3px;
+  }
+
+  .hero h1{
+    position:relative;z-index:2;
+    font-size:23px;
+    font-weight:800;
+    line-height:1.28;
+    margin:20px 0 6px;
+    color:#fff;
+  }
+  .hero p{
+    position:relative;z-index:2;
+    font-size:13px;
+    color:#BFE3D8;
+    margin:0;
+    line-height:1.5;
+    max-width:32ch;
+  }
+  .hero .tag{
+    position:relative; z-index:2;
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:14px;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.22);
+    color:#fff;
+    font-size:11.5px;
+    font-weight:600;
+    padding:6px 12px;
+    border-radius:999px;
+  }
+  .tag-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+
+  /* ---------- LAYOUT ---------- */
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px 18px 20px;
+    margin-top:-18px;
+    position:relative;
+    z-index:5;
+  }
+  .card + .card{margin-top:14px;}
+  .section-title{
+    font-size:13px;
+    font-weight:700;
+    color:var(--teal);
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    margin:0 0 14px;
+    display:flex;align-items:center;gap:7px;
+  }
+  .section-title .num{
+    width:20px;height:20px;border-radius:6px;
+    background:var(--gold-soft); color:var(--gold);
+    font-size:11px; font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  /* ---------- INPUTS ---------- */
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:13px; font-weight:600; color:var(--ink); margin-bottom:7px;
+  }
+  .field label .hint{font-size:11px;font-weight:500;color:var(--ink-soft);}
+  .input-shell{
+    display:flex; align-items:center;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    background:#FBFDFC;
+    transition:border-color .15s, background .15s;
+    overflow:hidden;
+  }
+  .input-shell:focus-within{border-color:var(--teal); background:#fff;}
+  .input-shell input[type=text], .input-shell input[type=number]{
+    flex:1; min-width:0;
+    border:none; outline:none; background:transparent;
+    font-family:inherit;
+    font-size:16px; font-weight:700; color:var(--ink);
+    padding:13px 4px 13px 14px;
+  }
+  .input-shell .unit{
+    font-size:12.5px; font-weight:600; color:var(--ink-soft);
+    padding:0 14px; white-space:nowrap;
+  }
+  .quick-amt{display:flex; gap:7px; margin-top:9px; flex-wrap:wrap;}
+  .quick-amt button{
+    border:1.5px solid var(--line);
+    background:#fff;
+    color:var(--teal);
+    font-family:inherit;
+    font-size:12px; font-weight:700;
+    padding:7px 11px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .quick-amt button.active, .quick-amt button:active{
+    background:var(--teal); border-color:var(--teal); color:#fff;
+  }
+
+  /* term toggle (year/month) */
+  .term-row{display:flex; gap:8px;}
+  .term-row .input-shell{flex:1;}
+  .unit-toggle{
+    display:flex; border:1.5px solid var(--line); border-radius:12px; overflow:hidden;
+  }
+  .unit-toggle button{
+    border:none; background:#FBFDFC; color:var(--ink-soft);
+    font-family:inherit; font-size:12.5px; font-weight:700;
+    padding:0 14px; cursor:pointer;
+  }
+  .unit-toggle button.active{background:var(--teal); color:#fff;}
+
+  .slider-row{margin-top:8px;}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:5px; border-radius:4px;
+    background:var(--line); outline:none; margin:10px 0 4px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+    background:var(--gold); border:3px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.25);
+    cursor:pointer; margin-top:-7.5px;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:20px; height:20px; border-radius:50%; background:var(--gold);
+    border:3px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.25); cursor:pointer;
+  }
+  .range-labels{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-soft);font-weight:600;}
+
+  .advanced-toggle{
+    width:100%;
+    background:none; border:none;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:13px 0 2px;
+    font-family:inherit; font-size:12.5px; font-weight:700; color:var(--teal);
+    cursor:pointer;
+  }
+  .advanced-toggle svg{transition:transform .2s;}
+  .advanced-toggle.open svg{transform:rotate(180deg);}
+  .advanced-body{
+    max-height:0; overflow:hidden; transition:max-height .28s ease;
+  }
+  .advanced-body.open{max-height:900px;}
+  .advanced-inner{padding-top:14px; border-top:1px dashed var(--line); margin-top:14px;}
+
+  .calc-btn{
+    width:100%;
+    background:linear-gradient(135deg, var(--teal) 0%, var(--teal-light) 100%);
+    color:#fff;
+    border:none; border-radius:14px;
+    font-family:inherit; font-size:15.5px; font-weight:800;
+    padding:16px;
+    margin-top:18px;
+    box-shadow:0 10px 20px -8px rgba(0,107,94,0.55);
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .calc-btn:active{transform:scale(0.98);}
+
+  /* ---------- RESULTS ---------- */
+  #results{display:none;}
+  #results.show{display:block;}
+
+  .hero-result{
+    background:linear-gradient(160deg, var(--navy) 0%, var(--teal) 130%);
+    border-radius:var(--radius);
+    padding:22px 20px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-result .label{font-size:12px; font-weight:600; color:#BFE3D8; margin-bottom:6px;}
+  .hero-result .value{font-size:30px; font-weight:800; letter-spacing:-0.5px;}
+  .hero-result .value sup{font-size:14px; font-weight:600; margin-left:4px; color:#BFE3D8;}
+  .hero-result .sub{font-size:12px; color:#BFE3D8; margin-top:6px; line-height:1.5;}
+
+  .dti-ring-wrap{
+    display:flex; align-items:center; gap:16px;
+    margin-top:16px;
+    background:rgba(255,255,255,0.08);
+    border-radius:14px;
+    padding:14px;
+  }
+  .dti-ring{position:relative; width:74px; height:74px; flex-shrink:0;}
+  .dti-ring svg{transform:rotate(-90deg);}
+  .dti-ring .center{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+  }
+  .dti-ring .center b{font-size:16px; font-weight:800;}
+  .dti-ring .center span{font-size:8.5px; color:#BFE3D8; font-weight:600;}
+  .dti-text b{display:block; font-size:13px; margin-bottom:3px;}
+  .dti-text p{margin:0; font-size:11.5px; color:#BFE3D8; line-height:1.5;}
+
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+  .stat-box{
+    background:var(--card); border-radius:14px; padding:14px;
+    box-shadow:var(--shadow);
+  }
+  .stat-box .stat-label{font-size:11px; font-weight:600; color:var(--ink-soft); margin-bottom:5px;}
+  .stat-box .stat-value{font-size:16.5px; font-weight:800; color:var(--navy); letter-spacing:-0.3px;}
+  .stat-box .stat-value.gold{color:#C9821A;}
+  .stat-box .stat-note{font-size:10px; color:var(--ink-soft); margin-top:3px;}
+
+  /* phase timeline */
+  .phase-card{margin-top:14px;}
+  .phase{
+    display:flex; gap:12px; padding:13px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .phase:last-child{border-bottom:none;}
+  .phase-dot-col{display:flex; flex-direction:column; align-items:center; width:22px; flex-shrink:0;}
+  .phase-dot{
+    width:11px;height:11px;border-radius:50%; background:var(--teal);
+    border:3px solid var(--gold-soft); flex-shrink:0; margin-top:3px;
+  }
+  .phase-dot.alt{background:var(--gold);}
+  .phase-line{flex:1; width:2px; background:var(--line); margin-top:4px;}
+  .phase-body{flex:1;}
+  .phase-body .ph-title{font-size:13px; font-weight:700; color:var(--ink);}
+  .phase-body .ph-desc{font-size:11.5px; color:var(--ink-soft); margin-top:3px; line-height:1.45;}
+  .phase-body .ph-amt{
+    display:inline-block; margin-top:7px;
+    font-size:15px; font-weight:800; color:var(--teal);
+  }
+  .phase-body .ph-amt .vnd{font-size:11px; font-weight:600; color:var(--ink-soft); margin-left:3px;}
+
+  .breakdown-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 0; border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .breakdown-row:last-of-type{border-bottom:none;}
+  .breakdown-row .bd-label{color:var(--ink-soft); font-weight:500;}
+  .breakdown-row .bd-value{font-weight:700; color:var(--ink);}
+  .breakdown-row.total{
+    margin-top:6px; padding-top:14px; border-top:2px solid var(--navy); border-bottom:none;
+  }
+  .breakdown-row.total .bd-label{color:var(--navy); font-weight:700;}
+  .breakdown-row.total .bd-value{color:var(--teal); font-size:16px;}
+  .breakdown-row.minus .bd-value::before{content:"− "; color:var(--danger);}
+  .breakdown-row.plus .bd-value::before{content:"+ "; color:var(--ink-soft);}
+
+  /* TABLE LỊCH TRẢ NỢ */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    max-height: 380px;
+    overflow-y: auto;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    margin-top: 10px;
+  }
+  .table-responsive::-webkit-scrollbar { width: 6px; height: 6px; }
+  .table-responsive::-webkit-scrollbar-thumb { background: #C5D5D1; border-radius: 4px; }
+  
+  .schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    text-align: right;
+  }
+  .schedule-table th, .schedule-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .schedule-table th {
+    background: #F4F9F7;
+    color: var(--navy);
+    font-weight: 700;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    box-shadow: 0 1px 0 var(--line);
+  }
+  .schedule-table th:first-child, .schedule-table td:first-child {
+    text-align: center;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .schedule-table tbody tr:hover td {
+    background: #FAFCFB;
+  }
+
+  .verdict{
+    margin-top:14px; padding:14px; border-radius:14px;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .verdict.ok{background:#EAF7F0; border:1px solid #C7EAD7;}
+  .verdict.warn{background:#FDF1EA; border:1px solid #F6D9BF;}
+  .verdict .vicon{font-size:18px; line-height:1;}
+  .verdict .vtext b{display:block; font-size:13px; margin-bottom:2px;}
+  .verdict.ok .vtext b{color:var(--ok);}
+  .verdict.warn .vtext b{color:var(--danger);}
+  .verdict .vtext p{margin:0; font-size:11.5px; color:var(--ink-soft); line-height:1.5;}
+
+  .disclaimer{
+    font-size:10.5px; color:var(--ink-soft); line-height:1.6;
+    margin-top:16px; padding:12px 14px;
+    background:#FBFDFC; border-radius:12px; border:1px dashed var(--line);
+  }
+
+  .footer-cta{
+    margin-top:16px; text-align:center;
+  }
+  .footer-cta .cta-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--navy); color:#fff; text-decoration:none;
+    font-size:13.5px; font-weight:700;
+    padding:13px 22px; border-radius:999px;
+  }
+  .footer-note{
+    text-align:center; font-size:11px; color:var(--ink-soft);
+    margin-top:14px; line-height:1.6;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="brand-row">
+    <div class="brand-block-left">
+      <div class="logo-wrap">
+        <svg height="22" viewBox="0 0 65 24" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="20" font-family="'Be Vietnam Pro', Arial, sans-serif" font-weight="900" font-size="22" fill="#006B5E" letter-spacing="-0.5">BIDV</text>
+        </svg>
+      </div>
+      <div class="brand-sub">Chi nhánh Tràng Tiền - Hà Nội</div>
+    </div>
+    <div class="brand-block-right">
+      <div class="logo-wrap">
+        <svg height="16" viewBox="0 0 85 18" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="15" font-family="'Be Vietnam Pro', Arial, sans-serif" font-weight="800" font-size="15" fill="#00332C" letter-spacing="0">BIM LAND</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+  
+  <h1>Tính nguồn trả nợ vay mua Prima Bay</h1>
+  <p>Nhập thông tin khoản vay để biết thu nhập tối thiểu cần chứng minh — chỉ mất 30 giây.</p>
+  <div class="tag"><span class="tag-dot"></span> Theo chương trình ưu đãi Prima Bay × BIDV</div>
+</div>
+
+<div class="wrap">
+
+  <div class="card">
+    <p class="section-title"><span class="num">1</span> Khoản vay dự kiến</p>
+
+    <div class="field">
+      <label>Số tiền vay <span class="hint">VNĐ</span></label>
+      <div class="input-shell">
+        <input type="text" id="loanAmount" inputmode="numeric" value="2.000.000.000">
+        <span class="unit">đ</span>
+      </div>
+      <div class="quick-amt" id="quickAmt">
+        <button data-v="1000000000">1 tỷ</button>
+        <button data-v="2000000000" class="active">2 tỷ</button>
+        <button data-v="3000000000">3 tỷ</button>
+        <button data-v="5000000000">5 tỷ</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Kỳ hạn vay</label>
+      <div class="term-row">
+        <div class="input-shell">
+          <input type="text" id="termValue" inputmode="numeric" value="20">
+        </div>
+        <div class="unit-toggle">
+          <button id="unitYear" class="active">Năm</button>
+          <button id="unitMonth">Tháng</button>
+        </div>
+      </div>
+      <div class="slider-row">
+        <input type="range" id="termSlider" min="1" max="25" value="20" step="1">
+        <div class="range-labels"><span>1 năm</span><span>25 năm</span></div>
+      </div>
+    </div>
+
+    <button class="advanced-toggle" id="advToggle">
+      Tùy chỉnh lãi suất &amp; chi phí khác
+      <svg width="11" height="7" viewBox="0 0 11 7" fill="none"><path d="M1 1L5.5 5.5L10 1" stroke="#006B5E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="advanced-body" id="advBody">
+      <div class="advanced-inner">
+
+        <div class="field">
+          <label>Lãi suất ưu đãi <span class="hint">%/năm, giai đoạn ân hạn</span></label>
+          <div class="input-shell">
+            <input type="text" id="rateInput" inputmode="decimal" value="12">
+            <span class="unit">%/năm</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Thời gian ân hạn gốc <span class="hint">tháng</span></label>
+          <div class="input-shell">
+            <input type="text" id="graceInput" inputmode="numeric" value="30">
+            <span class="unit">tháng</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Chi phí sinh hoạt hàng tháng <span class="hint">của gia đình</span></label>
+          <div class="input-shell">
+            <input type="text" id="livingCost" inputmode="numeric" value="20.000.000">
+            <span class="unit">đ</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Hạn mức thẻ tín dụng <span class="hint">nếu có, phí ước tính 5%</span></label>
+          <div class="input-shell">
+            <input type="text" id="cardLimit" inputmode="numeric" value="10.000.000">
+            <span class="unit">đ</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Giới hạn tỷ lệ trả nợ/thu nhập <span class="hint">DTI ngân hàng cho phép</span></label>
+          <div class="input-shell">
+            <input type="text" id="dtiLimit" inputmode="numeric" value="70">
+            <span class="unit">%</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <button class="calc-btn" id="calcBtn">
+      Tính thu nhập tối thiểu
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <div id="results">
+
+    <div class="hero-result" style="margin-top:14px;">
+      <div class="label">THU NHẬP TỐI THIỂU CẦN CHỨNG MINH</div>
+      <div class="value" id="resIncome">0<sup>đ/tháng</sup></div>
+      <div class="sub" id="resIncomeNote">Tổng thu nhập của tất cả người vay trên hồ sơ</div>
+
+      <div class="dti-ring-wrap">
+        <div class="dti-ring">
+          <svg width="74" height="74">
+            <circle cx="37" cy="37" r="31" stroke="rgba(255,255,255,0.18)" stroke-width="7" fill="none"/>
+            <circle cx="37" cy="37" r="31" stroke="#F5A623" stroke-width="7" fill="none"
+              stroke-linecap="round" id="dtiCircle" stroke-dasharray="195" stroke-dashoffset="195"/>
+          </svg>
+          <div class="center"><b id="dtiPct">0%</b><span>DTI</span></div>
+        </div>
+        <div class="dti-text">
+          <b>Tỷ lệ trả nợ / thu nhập</b>
+          <p>Phần trăm thu nhập dùng để trả nợ hàng tháng ở kỳ trả cao nhất.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-label">Trả nợ cao nhất/tháng</div>
+        <div class="stat-value" id="resMaxPay">0 đ</div>
+        <div class="stat-note">Gốc + lãi, tháng đầu sau ân hạn</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Thu nhập còn lại</div>
+        <div class="stat-value gold" id="resRemain">0 đ</div>
+        <div class="stat-note">Sau khi trừ mọi chi phí</div>
+      </div>
+    </div>
+
+    <div class="card phase-card">
+      <p class="section-title"><span class="num">2</span> Lộ trình trả nợ</p>
+
+      <div class="phase">
+        <div class="phase-dot-col"><div class="phase-dot"></div><div class="phase-line"></div></div>
+        <div class="phase-body">
+          <div class="ph-title" id="phase1Title">Tháng 1 – 30: Giai đoạn ân hạn</div>
+          <div class="ph-desc">Chỉ trả lãi trên dư nợ gốc, chưa trả gốc. Áp dụng lãi suất ưu đãi.</div>
+          <div class="ph-amt" id="phase1Amt">0<span class="vnd">đ/tháng (chỉ lãi)</span></div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot-col"><div class="phase-dot alt"></div></div>
+        <div class="phase-body">
+          <div class="ph-title" id="phase2Title">Tháng 31 trở đi: Trả gốc + lãi</div>
+          <div class="ph-desc">Bắt đầu trả gốc đều hàng tháng, cộng lãi trên dư nợ giảm dần. Đây là giai đoạn có khoản trả <b>cao nhất</b>.</div>
+          <div class="ph-amt" id="phase2Amt">0<span class="vnd">đ/tháng (cao nhất)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="section-title"><span class="num">3</span> Chi tiết nguồn trả nợ</p>
+      <div class="breakdown-row">
+        <span class="bd-label">① Thu nhập tối thiểu cần có</span>
+        <span class="bd-value" id="bdIncome">0 đ</span>
+      </div>
+      <div class="breakdown-row minus">
+        <span class="bd-label">② Chi phí sinh hoạt</span>
+        <span class="bd-value" id="bdLiving">0 đ</span>
+      </div>
+      <div class="breakdown-row minus">
+        <span class="bd-label">③ Trả nợ vay (cao nhất)</span>
+        <span class="bd-value" id="bdLoan">0 đ</span>
+      </div>
+      <div class="breakdown-row minus">
+        <span class="bd-label">④ Phí thẻ tín dụng/tháng</span>
+        <span class="bd-value" id="bdCard">0 đ</span>
+      </div>
+      <div class="breakdown-row total">
+        <span class="bd-label">Thu nhập còn lại (⑤=①−②−③−④)</span>
+        <span class="bd-value" id="bdRemain">0 đ</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="section-title"><span class="num">4</span> Lịch trả nợ dự kiến (Tháng)</p>
+      <div class="table-responsive">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Kỳ</th>
+              <th>Dư nợ đầu kỳ</th>
+              <th>Tiền Lãi</th>
+              <th>Tiền Gốc</th>
+              <th>Tổng Trả</th>
+              <th>Dư nợ cuối kỳ</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleBody">
+            </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="verdict ok" id="verdictBox">
+      <div class="vicon">✅</div>
+      <div class="vtext">
+        <b id="verdictTitle">Phù hợp với chính sách BIDV</b>
+        <p id="verdictDesc">Tỷ lệ trả nợ/thu nhập nằm trong giới hạn cho phép.</p>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <b>Lưu ý:</b> Kết quả mang tính chất tham khảo, dựa trên giả định lãi suất ưu đãi không đổi trong giai đoạn ân hạn và không bao gồm các khoản vay/nghĩa vụ tài chính khác của khách hàng. Số tiền và lãi suất thực tế sẽ được BIDV thẩm định cụ thể theo hồ sơ.
+    </div>
+
+    <div class="footer-cta">
+      <a class="cta-btn" href="tel:0247300199">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 1.5C2.5 1.5 2 2 2.5C2 9.4 7.6 15 14.5 15C15 15 15.5 14.5 15.5 14V11.8C15.5 11.4 15.2 11 14.8 10.9L11.7 10.2C11.3 10.1 10.9 10.3 10.7 10.6L10 11.7C8 10.7 6.3 9 5.3 7L6.4 6.3C6.7 6.1 6.9 5.7 6.8 5.3L6.1 2.2C6 1.8 1 1.5 3 1.5Z" fill="white"/></svg>
+        Liên hệ tư vấn viên BIDV
+      </a>
+      <div class="footer-note">BIDV Tràng Tiền – Hà Nội · 41 Hai Bà Trưng, Hoàn Kiếm<br>Chương trình ưu đãi dự án Prima Bay × BIM Land</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+
+  /* ---------- number formatting ---------- */
+  function parseNum(str){
+    if(!str) return 0;
+    const cleaned = String(str).replace(/[^\d]/g,'');
+    return cleaned ? parseInt(cleaned,10) : 0;
+  }
+  function fmt(n){
+    n = Math.round(n);
+    return n.toLocaleString('vi-VN');
+  }
+  function fmtShort(n){
+    if(n >= 1e9) return (n/1e9).toLocaleString('vi-VN',{maximumFractionDigits:2}) + ' tỷ';
+    if(n >= 1e6) return (n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1}) + ' triệu';
+    return fmt(n);
+  }
+
+  /* live-format the money inputs as user types */
+  function attachMoneyInput(id){
+    const el = $(id);
+    el.addEventListener('input', e=>{
+      const raw = parseNum(e.target.value);
+      e.target.value = raw ? fmt(raw) : '';
+    });
+  }
+  ['loanAmount','livingCost','cardLimit'].forEach(attachMoneyInput);
+
+  /* ---------- quick amount chips ---------- */
+  const quickAmt = $('quickAmt');
+  quickAmt.addEventListener('click', e=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    [...quickAmt.children].forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    $('loanAmount').value = fmt(parseInt(btn.dataset.v,10));
+  });
+  $('loanAmount').addEventListener('input', ()=>{
+    [...quickAmt.children].forEach(b=>b.classList.remove('active'));
+  });
+
+  /* ---------- term unit toggle (year/month) + slider sync ---------- */
+  let termUnit = 'year'; 
+  const unitYearBtn = $('unitYear'), unitMonthBtn = $('unitMonth');
+  const termValue = $('termValue'), termSlider = $('termSlider');
+
+  function setUnit(u){
+    termUnit = u;
+    unitYearBtn.classList.toggle('active', u==='year');
+    unitMonthBtn.classList.toggle('active', u==='month');
+    if(u==='year'){
+      termSlider.min=1; termSlider.max=25;
+      const yrs = Math.round(parseNum(termValue.value)/ (termValue.dataset.wasMonth ? 12:1));
+      termValue.value = Math.min(25, Math.max(1, parseNum(termValue.value) > 25 ? Math.round(parseNum(termValue.value)/12) : parseNum(termValue.value)));
+      termSlider.value = termValue.value;
+    } else {
+      termSlider.min=12; termSlider.max=300;
+      const months = parseNum(termValue.value) <= 25 ? parseNum(termValue.value)*12 : parseNum(termValue.value);
+      termValue.value = months;
+      termSlider.value = months;
+    }
+  }
+  unitYearBtn.addEventListener('click', ()=>{
+    if(termUnit==='month'){
+      termValue.value = Math.round(parseNum(termValue.value)/12);
+    }
+    setUnit('year');
+  });
+  unitMonthBtn.addEventListener('click', ()=>{
+    if(termUnit==='year'){
+      termValue.value = parseNum(termValue.value)*12;
+    }
+    setUnit('month');
+  });
+  termSlider.addEventListener('input', ()=>{ termValue.value = termSlider.value; });
+  termValue.addEventListener('input', ()=>{
+    const v = parseNum(termValue.value);
+    if(v) termSlider.value = Math.min(termSlider.max, Math.max(termSlider.min, v));
+  });
+
+  /* ---------- advanced panel ---------- */
+  const advToggle = $('advToggle'), advBody = $('advBody');
+  advToggle.addEventListener('click', ()=>{
+    advToggle.classList.toggle('open');
+    advBody.classList.toggle('open');
+  });
+
+  /* ---------- core calculation ---------- */
+  function calculate(){
+    const loan = parseNum($('loanAmount').value) || 0;
+    const termMonths = termUnit==='year' ? parseNum(termValue.value)*12 : parseNum(termValue.value);
+    const grace = Math.min(parseNum($('graceInput').value)||0, termMonths-1);
+    const rateYear = parseFloat($('rateInput').value.replace(',','.')) || 0;
+    const rateMonth = rateYear/100/12;
+    const living = parseNum($('livingCost').value) || 0;
+    const cardLimit = parseNum($('cardLimit').value) || 0;
+    const cardFee = cardLimit * 0.05;
+    const dtiLimit = (parseFloat($('dtiLimit').value)||70)/100;
+
+    if(loan<=0 || termMonths<=0){ return null; }
+
+    const principalPerPeriod = grace < termMonths ? Math.round(loan/(termMonths-grace)) : 0;
+
+    let balance = loan;
+    let maxPayment = 0, maxPeriod = 0, maxInterest=0, maxPrincipal=0;
+    let firstGraceInterest = balance*rateMonth;
+
+    const schedule = []; 
+
+    for(let p=1; p<=termMonths; p++){
+      const interest = Math.round(balance * rateMonth);
+      let principal = p <= grace ? 0 : principalPerPeriod;
+      
+      if (p === termMonths || balance - principal < 0) {
+        principal = balance;
+      }
+
+      const total = interest + principal;
+      const startBalance = balance;
+      
+      if(total > maxPayment){ maxPayment=total; maxPeriod=p; maxInterest=interest; maxPrincipal=principal; }
+      
+      balance -= principal;
+      if(balance<0) balance=0;
+
+      schedule.push({
+        period: p,
+        startBalance: startBalance,
+        interest: interest,
+        principal: principal,
+        total: total,
+        endBalance: balance
+      });
+    }
+
+    const incomeByDTI = maxPayment / dtiLimit;
+    const incomeByCoverage = maxPayment + living + cardFee;
+    const requiredIncomeRaw = Math.max(incomeByDTI, incomeByCoverage);
+    const requiredIncome = Math.ceil(requiredIncomeRaw/100000)*100000;
+    const remaining = requiredIncome - living - maxPayment - cardFee;
+    const dtiActual = maxPayment / requiredIncome;
+
+    return {
+      loan, termMonths, grace, rateYear, living, cardFee, dtiLimit,
+      principalPerPeriod, maxPayment, maxPeriod, maxInterest, maxPrincipal,
+      firstGraceInterest, requiredIncome, remaining, dtiActual,
+      schedule 
+    };
+  }
+
+  /* ---------- render ---------- */
+  function render(r, shouldScroll){
+    $('results').classList.add('show');
+
+    $('resIncome').innerHTML = fmt(r.requiredIncome) + '<sup>đ/tháng</sup>';
+    $('resIncomeNote').textContent = `Cho khoản vay ${fmtShort(r.loan)}, ${r.termMonths/12 % 1===0 ? r.termMonths/12+' năm' : r.termMonths+' tháng'}`;
+
+    $('resMaxPay').textContent = fmt(r.maxPayment)+' đ';
+    $('resRemain').textContent = fmt(r.remaining)+' đ';
+
+    const dtiPctVal = Math.min(r.dtiActual*100, 100);
+    const circumference = 2*Math.PI*31;
+    const offset = circumference - (dtiPctVal/100)*circumference;
+    const circle = $('dtiCircle');
+    circle.style.strokeDasharray = circumference;
+    circle.style.strokeDashoffset = circumference;
+    requestAnimationFrame(()=>{
+      circle.style.transition = 'stroke-dashoffset 0.9s cubic-bezier(.3,.8,.3,1)';
+      circle.style.strokeDashoffset = offset;
+    });
+    $('dtiPct').textContent = dtiPctVal.toFixed(0)+'%';
+
+    $('phase1Title').textContent = `Tháng 1 – ${r.grace}: Giai đoạn ân hạn`;
+    $('phase1Amt').innerHTML = fmt(r.firstGraceInterest)+'<span class="vnd">đ/tháng (chỉ lãi, '+r.rateYear+'%/năm)</span>';
+
+    $('phase2Title').textContent = `Tháng ${r.grace+1} trở đi: Trả gốc + lãi`;
+    $('phase2Amt').innerHTML = fmt(r.maxPayment)+'<span class="vnd">đ/tháng (cao nhất, kỳ '+r.maxPeriod+')</span>';
+
+    $('bdIncome').textContent = fmt(r.requiredIncome)+' đ';
+    $('bdLiving').textContent = fmt(r.living)+' đ';
+    $('bdLoan').textContent = fmt(r.maxPayment)+' đ';
+    $('bdCard').textContent = fmt(r.cardFee)+' đ';
+    $('bdRemain').textContent = fmt(r.remaining)+' đ';
+
+    const tbody = $('scheduleBody');
+    tbody.innerHTML = '';
+    r.schedule.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.period}</td>
+        <td>${fmt(row.startBalance)}</td>
+        <td>${fmt(row.interest)}</td>
+        <td>${fmt(row.principal)}</td>
+        <td style="color:var(--navy); font-weight:700;">${fmt(row.total)}</td>
+        <td>${fmt(row.endBalance)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    const box = $('verdictBox');
+    if(r.dtiActual <= r.dtiLimit + 0.001){
+      box.className = 'verdict ok';
+      $('verdictTitle').textContent = 'Phù hợp với chính sách BIDV';
+      $('verdictDesc').textContent = `Tỷ lệ trả nợ/thu nhập ${(r.dtiActual*100).toFixed(0)}% nằm trong giới hạn ${(r.dtiLimit*100).toFixed(0)}% cho phép.`;
+      box.querySelector('.vicon').textContent = '✅';
+    } else {
+      box.className = 'verdict warn';
+      $('verdictTitle').textContent = 'Cần thu nhập cao hơn dự kiến';
+      $('verdictDesc').textContent = `Với thu nhập hiện tại, tỷ lệ trả nợ vượt ${(r.dtiLimit*100).toFixed(0)}% cho phép. Hãy tăng thu nhập chứng minh hoặc giảm số tiền vay.`;
+      box.querySelector('.vicon').textContent = '⚠️';
+    }
+
+    if(shouldScroll){
+      $('results').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }
+
+  $('calcBtn').addEventListener('click', ()=>{
+    const r = calculate();
+    if(!r){ return; }
+    render(r, true);
+  });
+
+  window.addEventListener('load', ()=>{
+    const r = calculate();
+    if(r) render(r, false);
+    $('results').classList.remove('show');
+  });
+})();
+</script>
+
+</body>
+</html>
